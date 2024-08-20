@@ -1,21 +1,60 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from 'react-toastify';
+
 
 const Create = () => {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [author, setAuthor] = useState("");
   const [error, setError] = useState(null)
+  const navigate = useNavigate()
+
+  const notify = () => toast("blog added");
+
  
 
   const handleSubmit = async (e) => {
     e.preventDefault()
   if(!title|| !body || !author){
     setError('Please Enter Your Blog Details')
+    return
   }
 
+  try {
+    const blogs = {
+      title,
+      body,
+      author
+    }
 
-   const response = await fetch('')
-     
+
+   const response = await fetch('http://localhost:8000/blogs', {
+    method:"POST",
+    headers:{"content-type": "application/json"},
+    body:JSON.stringify(blogs)
+
+   })
+    
+
+      if(!response.ok){
+        throw new Error("Failed to fetch")
+      }
+
+      // alert('blog added successfully')
+      notify()
+
+
+      setTimeout(() => {
+        navigate('/')
+      }, 1000);
+      
+
+
+     } catch (error) {
+       console.log('error:', error);
+     }
   }
 
   return (
@@ -58,6 +97,7 @@ const Create = () => {
           </button>
         </form>
       </div>
+      <ToastContainer/>
     </div>
   );
 };
